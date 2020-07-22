@@ -1,0 +1,42 @@
+{% load static %}
+<html>
+  <head>
+    <title>Notifier</title>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/web-socket-js/1.0.0/web_socket.min.js"></script>
+
+  </head>
+  <body>
+  <h1>Current alarms running: </h1>
+    <p>Ordered by Names of alarm clocks</p>
+    <ul id="notifylist"></ul>
+    <script>
+        console.log("Message")
+        var endpoint = 'ws://'+window.location.host + '/listen_alarm'
+        const socket = new WebSocket(endpoint);
+        const nl = document.querySelector("#notifylist")
+        socket.onmessage = function(e){
+            console.log("Message", e);
+
+            const clocks = JSON.parse(e['data']);
+            const arrayLength = clocks.length;
+            console.log("STARTING LOOP")
+            console.log(clocks)
+            document.gavno = clocks
+            for (var i = 0; i < arrayLength; i++) {
+                //console.log(clocks[i]['fields']['title']);
+                var el = document.createElement("li");
+                el.innerHTML = clocks[i]['fields']['title'];
+                nl.appendChild(el);
+            }
+
+        }
+        socket.onopen = function(e){
+            console.log("OPen", e)
+        }
+        socket.onclose = function(e){
+            console.log("Closed", e)
+        }
+        document.ws = socket; /* for debugging */
+    </script>
+  </body>
+</html>
